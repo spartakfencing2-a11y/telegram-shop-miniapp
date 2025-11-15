@@ -359,7 +359,10 @@
 
         function buyItem(shopItemId) {
             const item = shopItems.find(i => i.shop_item_id === shopItemId);
-            if (!item) return;
+            if (!item) {
+                tg.showAlert('Товар не найден');
+                return;
+            }
             
             if (item.price > userPoints) {
                 tg.showAlert('Недостаточно footpoints!');
@@ -370,13 +373,15 @@
                 return;
             }
 
+            // Отправляем данные в бота
             tg.sendData(JSON.stringify({
                 action: 'buy_shop_item',
                 shop_item_id: shopItemId
             }));
             
-            tg.showAlert('Покупка обрабатывается...');
-            setTimeout(() => tg.close(), 500);
+            // Закрываем MiniApp после отправки данных
+            // Бот отправит ответ пользователю отдельным сообщением
+            tg.close();
         }
 
         function showEmpty() {
