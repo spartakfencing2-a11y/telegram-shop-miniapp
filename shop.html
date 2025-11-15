@@ -381,25 +381,33 @@
             }
 
             // Показываем индикатор загрузки
-            tg.MainButton.setText('Обработка...');
-            tg.MainButton.show();
-            tg.MainButton.disable();
+            const button = document.querySelector(`button[onclick="buyItem(${shopItemId})"]`);
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Обработка...';
+            }
 
             // Отправляем данные в бота
             try {
-                tg.sendData(JSON.stringify({
+                const purchaseData = {
                     action: 'buy_shop_item',
                     shop_item_id: shopItemId
-                }));
+                };
+                
+                console.log('Отправка данных покупки:', purchaseData);
+                tg.sendData(JSON.stringify(purchaseData));
                 
                 // Ждем немного перед закрытием, чтобы данные успели отправиться
                 setTimeout(() => {
                     tg.close();
-                }, 300);
+                }, 500);
             } catch (e) {
                 console.error('Ошибка отправки данных:', e);
                 tg.showAlert('Ошибка при отправке запроса. Попробуйте еще раз.');
-                tg.MainButton.hide();
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Купить';
+                }
             }
         }
 
