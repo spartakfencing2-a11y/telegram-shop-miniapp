@@ -388,29 +388,50 @@
             }
 
             // Отправляем данные в бота
+            const purchaseData = {
+                action: 'buy_shop_item',
+                shop_item_id: shopItemId
+            };
+            
+            console.log('Отправка данных покупки:', purchaseData);
+            const dataString = JSON.stringify(purchaseData);
+            console.log('Данные в формате JSON:', dataString);
+            console.log('Telegram WebApp объект:', tg);
+            console.log('sendData доступна?', typeof tg.sendData);
+            
+            // Проверяем доступность sendData
+            if (typeof tg.sendData !== 'function') {
+                console.error('tg.sendData не доступна!');
+                tg.showAlert('Ошибка: sendData недоступна. Версия Telegram может быть устаревшей.');
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = 'Купить';
+                }
+                return;
+            }
+            
+            // Используем sendData для отправки данных
             try {
-                const purchaseData = {
-                    action: 'buy_shop_item',
-                    shop_item_id: shopItemId
-                };
-                
-                console.log('Отправка данных покупки:', purchaseData);
-                const dataString = JSON.stringify(purchaseData);
-                console.log('Данные в формате JSON:', dataString);
-                
-                // Используем sendData для отправки данных
+                console.log('Вызываем tg.sendData...');
                 tg.sendData(dataString);
+                console.log('tg.sendData вызван успешно');
                 
-                console.log('Данные отправлены, ждем 1 секунду перед закрытием...');
+                // Подписываемся на событие отправки данных (если доступно)
+                if (tg.onEvent) {
+                    tg.onEvent('invoiceClosed', (event) => {
+                        console.log('Invoice closed event:', event);
+                    });
+                }
                 
                 // Ждем дольше перед закрытием, чтобы данные успели отправиться
+                console.log('Ждем 2 секунды перед закрытием...');
                 setTimeout(() => {
                     console.log('Закрываем MiniApp...');
                     tg.close();
-                }, 1000);
+                }, 2000);
             } catch (e) {
-                console.error('Ошибка отправки данных:', e);
-                tg.showAlert('Ошибка при отправке запроса: ' + e.message);
+                console.error('Ошибка при вызове sendData:', e);
+                tg.showAlert('Ошибка отправки: ' + (e.message || e.toString()));
                 if (button) {
                     button.disabled = false;
                     button.textContent = 'Купить';
