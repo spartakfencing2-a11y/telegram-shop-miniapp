@@ -395,15 +395,22 @@
                 };
                 
                 console.log('Отправка данных покупки:', purchaseData);
-                tg.sendData(JSON.stringify(purchaseData));
+                const dataString = JSON.stringify(purchaseData);
+                console.log('Данные в формате JSON:', dataString);
                 
-                // Ждем немного перед закрытием, чтобы данные успели отправиться
+                // Используем sendData для отправки данных
+                tg.sendData(dataString);
+                
+                console.log('Данные отправлены, ждем 1 секунду перед закрытием...');
+                
+                // Ждем дольше перед закрытием, чтобы данные успели отправиться
                 setTimeout(() => {
+                    console.log('Закрываем MiniApp...');
                     tg.close();
-                }, 500);
+                }, 1000);
             } catch (e) {
                 console.error('Ошибка отправки данных:', e);
-                tg.showAlert('Ошибка при отправке запроса. Попробуйте еще раз.');
+                tg.showAlert('Ошибка при отправке запроса: ' + e.message);
                 if (button) {
                     button.disabled = false;
                     button.textContent = 'Купить';
@@ -432,6 +439,16 @@
 
         tg.onEvent('viewportChanged', () => {
             tg.expand();
+        });
+        
+        // Слушаем события отправки данных
+        tg.onEvent('mainButtonClicked', () => {
+            console.log('MainButton clicked');
+        });
+        
+        // Слушаем закрытие MiniApp
+        tg.onEvent('close', () => {
+            console.log('MiniApp закрывается');
         });
 
         // Загружаем данные сразу при загрузке страницы
