@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🛒 Магазин</title>
+    <title>Магазин</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -13,389 +13,380 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--tg-theme-bg-color, #ffffff);
-            color: var(--tg-theme-text-color, #000000);
-            padding: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2744 50%, #0d1b2e 100%);
+            color: #ffffff;
+            padding: 15px 10px;
             min-height: 100vh;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
+            overflow-x: auto;
         }
 
         .header {
             text-align: center;
-            padding: 15px;
-            background: var(--tg-theme-secondary-bg-color, #f1f1f1);
-            border-radius: 10px;
-            margin-bottom: 15px;
+            padding: 20px 15px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+            font-size: 26px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .points {
             font-size: 18px;
-            font-weight: bold;
-            color: var(--tg-theme-button-color, #2481cc);
+            font-weight: 600;
+            color: #64b5f6;
+            text-shadow: 0 0 10px rgba(100, 181, 246, 0.5);
         }
 
-        .card-container {
-            position: relative;
-            margin-bottom: 20px;
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 0 5px;
         }
 
-        .card {
-            background: var(--tg-theme-secondary-bg-color, #f1f1f1);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-image {
-            width: 100%;
-            max-width: 300px;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin: 0 auto 15px;
-            display: block;
-            background: var(--tg-theme-bg-color, #ffffff);
-        }
-
-        .card-info {
+        .shop-item {
+            background: linear-gradient(145deg, rgba(26, 39, 68, 0.8) 0%, rgba(13, 27, 46, 0.9) 100%);
+            border-radius: 16px;
+            padding: 18px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
-        .card-name {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: var(--tg-theme-text-color, #000000);
+        .shop-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #64b5f6, #90caf9, #64b5f6);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        .card-rating {
-            font-size: 20px;
-            color: #ff9800;
-            margin-bottom: 10px;
+        .shop-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(100, 181, 246, 0.3);
+            border-color: rgba(100, 181, 246, 0.4);
         }
 
-        .card-details {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color, #999999);
-            margin-bottom: 10px;
-            line-height: 1.6;
+        .shop-item:hover::before {
+            opacity: 1;
+        }
+
+        .item-image {
+            width: 100%;
+            max-width: 180px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin: 0 auto 12px;
+            display: block;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .item-rating {
+            font-size: 18px;
+            color: #ffb74d;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .rarity-badge {
             display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
             margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .rarity-common {
-            background: #9e9e9e;
+            background: linear-gradient(135deg, #757575, #9e9e9e);
             color: white;
         }
 
         .rarity-rare {
-            background: #2196f3;
+            background: linear-gradient(135deg, #1976d2, #42a5f5);
             color: white;
         }
 
         .rarity-unique {
-            background: #9c27b0;
+            background: linear-gradient(135deg, #7b1fa2, #ab47bc);
             color: white;
         }
 
         .rarity-legendary {
-            background: #ff9800;
+            background: linear-gradient(135deg, #f57c00, #ffb74d);
             color: white;
         }
 
-        .card-price {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--tg-theme-button-color, #2481cc);
-            margin: 15px 0;
+        .item-details {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 12px;
+            line-height: 1.5;
         }
 
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding: 0 10px;
-        }
-
-        .nav-button {
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            font-weight: bold;
-        }
-
-        .nav-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .nav-button:not(:disabled):active {
-            opacity: 0.8;
-        }
-
-        .card-counter {
-            font-size: 16px;
-            color: var(--tg-theme-hint-color, #999999);
-            font-weight: bold;
+        .item-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #64b5f6;
+            margin: 12px 0;
+            text-shadow: 0 0 8px rgba(100, 181, 246, 0.4);
         }
 
         .buy-button {
             width: 100%;
-            background: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
+            background: linear-gradient(135deg, #1565c0, #1976d2);
+            color: #ffffff;
             border: none;
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: 10px;
+            transition: all 0.3s;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
         }
 
-        .buy-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .buy-button:not(:disabled):hover {
+            background: linear-gradient(135deg, #1976d2, #1e88e5);
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(21, 101, 192, 0.5);
         }
 
         .buy-button:not(:disabled):active {
-            opacity: 0.8;
+            transform: scale(0.98);
+        }
+
+        .buy-button:disabled {
+            background: rgba(100, 100, 100, 0.3);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            box-shadow: none;
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
             font-size: 18px;
-            color: var(--tg-theme-hint-color, #999999);
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .error {
             text-align: center;
-            padding: 40px;
-            color: #f44336;
+            padding: 60px 20px;
+            color: #ef5350;
             font-size: 16px;
+            background: rgba(239, 83, 80, 0.1);
+            border-radius: 12px;
+            margin: 20px;
+            border: 1px solid rgba(239, 83, 80, 0.3);
         }
 
         .empty {
             text-align: center;
-            padding: 40px;
+            padding: 60px 20px;
             font-size: 18px;
-            color: var(--tg-theme-hint-color, #999999);
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .shop-grid {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            
+            .shop-item {
+                padding: 15px;
+            }
+            
+            .item-image {
+                height: 180px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🛒 Магазин</h1>
-            <div class="points" id="points">Загрузка...</div>
-        </div>
+    <div class="header">
+        <h1>🛒 Магазин карточек</h1>
+        <div class="points" id="points">Загрузка...</div>
+    </div>
 
-        <div id="content">
-            <div class="loading">Загрузка товаров...</div>
-        </div>
+    <div id="content">
+        <div class="loading">Загружаем товары...</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+        tg.setHeaderColor('#0a1628');
+        tg.setBackgroundColor('#0a1628');
 
         let shopItems = [];
-        let currentIndex = 0;
         let userPoints = 0;
 
-        // Получаем данные из initData
-        function getInitData() {
+        function loadShopData() {
             try {
-                const initData = tg.initData;
-                if (!initData) return null;
+                let data = null;
                 
-                // Парсим initData (это URL-encoded строка)
-                const params = new URLSearchParams(initData);
-                const userStr = params.get('user');
-                if (userStr) {
-                    return JSON.parse(decodeURIComponent(userStr));
-                }
-            } catch (e) {
-                console.error('Error parsing initData:', e);
-            }
-            return null;
-        }
-
-        // Получаем данные из стартовых параметров или через запрос
-        async function loadShopData() {
-            try {
-                const startParam = tg.initDataUnsafe?.start_param;
+                // Пытаемся получить данные из URL параметров
+                const urlParams = new URLSearchParams(window.location.search);
+                const startParam = urlParams.get('start_param');
+                
                 if (startParam) {
-                    // Данные переданы через start_param (закодированы в base64)
-                    const data = JSON.parse(atob(startParam));
-                    shopItems = data.items || [];
-                    userPoints = data.points || 0;
-                } else {
-                    // Альтернативный способ: через запрос к боту
-                    const user = tg.initDataUnsafe?.user;
-                    if (user) {
-                        // Можно сделать запрос к боту через Telegram Bot API
-                        // Но проще передать через start_param
-                        showError('Не удалось загрузить данные');
-                        return;
+                    try {
+                        data = JSON.parse(atob(startParam));
+                    } catch (e) {
+                        console.error('Ошибка декодирования start_param:', e);
                     }
                 }
+                
+                // Если не получилось из URL, пробуем из initDataUnsafe
+                if (!data) {
+                    const initDataStartParam = tg.initDataUnsafe?.start_param;
+                    if (initDataStartParam) {
+                        try {
+                            data = JSON.parse(atob(initDataStartParam));
+                        } catch (e) {
+                            console.error('Ошибка декодирования initDataUnsafe:', e);
+                        }
+                    }
+                }
+                
+                if (!data) {
+                    showError('Не удалось загрузить данные. Закройте и откройте магазин заново.');
+                    return;
+                }
+
+                shopItems = data.items || [];
+                userPoints = data.points || 0;
 
                 if (shopItems.length === 0) {
                     showEmpty();
                 } else {
-                    renderCard();
+                    renderShop();
                     updatePoints();
                 }
             } catch (e) {
-                console.error('Error loading shop data:', e);
-                showError('Ошибка загрузки данных');
+                console.error('Ошибка загрузки:', e);
+                showError('Произошла ошибка при загрузке товаров. Попробуйте позже.');
             }
         }
 
         function updatePoints() {
             const pointsEl = document.getElementById('points');
-            pointsEl.textContent = `💰 Footpoints: ${userPoints}`;
+            pointsEl.textContent = `💰 У вас: ${userPoints} footpoints`;
         }
 
-        function renderCard() {
-            if (currentIndex < 0 || currentIndex >= shopItems.length) {
-                return;
-            }
-
-            const item = shopItems[currentIndex];
+        function renderShop() {
             const contentEl = document.getElementById('content');
-
-            const rarityClass = `rarity-${item.rarity || 'common'}`;
+            
             const rarityNames = {
                 'common': 'Обычная',
                 'rare': 'Редкая',
                 'unique': 'Уникальная',
                 'legendary': 'Легендарная'
             };
-            const rarityText = rarityNames[item.rarity] || item.rarity;
 
-            // Формируем путь к изображению
-            let imageSrc = '';
-            if (item.image_url) {
-                if (item.image_url.startsWith('http')) {
-                    imageSrc = item.image_url;
-                } else {
-                    // Для локальных файлов нужно использовать бота как прокси
-                    // Или передать абсолютный URL
-                    imageSrc = item.image_url;
+            let html = '<div class="shop-grid">';
+            
+            shopItems.forEach((item) => {
+                const rarityClass = `rarity-${item.rarity || 'common'}`;
+                const rarityText = rarityNames[item.rarity] || item.rarity;
+                
+                let imageSrc = '';
+                if (item.image_url) {
+                    if (item.image_url.startsWith('http')) {
+                        imageSrc = item.image_url;
+                    }
                 }
-            }
-
-            const details = [];
-            if (item.position) details.push(`Позиция: ${item.position}`);
-            if (item.club) details.push(`Клуб: ${item.club}`);
-            if (item.country) details.push(`Страна: ${item.country}`);
-
-            const canBuy = userPoints >= item.price;
-
-            contentEl.innerHTML = `
-                <div class="card-container">
-                    <div class="navigation">
-                        <button class="nav-button" ${currentIndex === 0 ? 'disabled' : ''} onclick="previousCard()">
-                            ← Назад
-                        </button>
-                        <div class="card-counter">${currentIndex + 1} / ${shopItems.length}</div>
-                        <button class="nav-button" ${currentIndex >= shopItems.length - 1 ? 'disabled' : ''} onclick="nextCard()">
-                            Вперед →
+                
+                const details = [];
+                if (item.position) details.push(item.position);
+                if (item.club) details.push(item.club);
+                
+                const canBuy = userPoints >= item.price;
+                
+                html += `
+                    <div class="shop-item">
+                        ${imageSrc ? `<img src="${imageSrc}" alt="${item.player_name}" class="item-image" onerror="this.style.display='none'">` : ''}
+                        <div class="item-name">${item.player_name}</div>
+                        <div class="item-rating">⭐ ${item.rating}</div>
+                        <div class="rarity-badge ${rarityClass}">${rarityText}</div>
+                        ${details.length > 0 ? `<div class="item-details">${details.join(' • ')}</div>` : ''}
+                        <div class="item-price">${item.price} FP</div>
+                        <button class="buy-button" ${!canBuy ? 'disabled' : ''} onclick="buyItem(${item.shop_item_id})">
+                            ${canBuy ? 'Купить' : 'Недостаточно'}
                         </button>
                     </div>
-
-                    <div class="card">
-                        ${imageSrc ? `<img src="${imageSrc}" alt="${item.player_name}" class="card-image" onerror="this.style.display='none'">` : ''}
-                        <div class="card-info">
-                            <div class="card-name">${item.player_name}</div>
-                            <div class="card-rating">⭐ ${item.rating}</div>
-                            <div class="rarity-badge ${rarityClass}">${rarityText}</div>
-                            ${details.length > 0 ? `<div class="card-details">${details.join('<br>')}</div>` : ''}
-                            <div class="card-price">💰 ${item.price} footpoints</div>
-                            <button class="buy-button" ${!canBuy ? 'disabled' : ''} onclick="buyItem(${item.shop_item_id})">
-                                ${canBuy ? 'Купить' : 'Недостаточно средств'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function previousCard() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                renderCard();
-            }
-        }
-
-        function nextCard() {
-            if (currentIndex < shopItems.length - 1) {
-                currentIndex++;
-                renderCard();
-            }
+                `;
+            });
+            
+            html += '</div>';
+            contentEl.innerHTML = html;
         }
 
         function buyItem(shopItemId) {
-            // Получаем текущий товар для проверки цены
-            const item = shopItems[currentIndex];
+            const item = shopItems.find(i => i.shop_item_id === shopItemId);
+            if (!item) return;
+            
             if (item.price > userPoints) {
-                tg.showAlert('Недостаточно footpoints для покупки!');
+                tg.showAlert('Недостаточно footpoints!');
                 return;
             }
 
-            if (!confirm(`Вы уверены, что хотите купить карточку ${item.player_name} за ${item.price} footpoints?`)) {
+            if (!confirm(`Купить ${item.player_name} за ${item.price} footpoints?`)) {
                 return;
             }
 
-            // Отправляем данные обратно в бота
             tg.sendData(JSON.stringify({
                 action: 'buy_shop_item',
                 shop_item_id: shopItemId
             }));
             
-            // Закрываем MiniApp после отправки данных
-            tg.close();
+            tg.showAlert('Покупка обрабатывается...');
+            setTimeout(() => tg.close(), 500);
         }
 
         function showEmpty() {
             const contentEl = document.getElementById('content');
             contentEl.innerHTML = `
                 <div class="empty">
-                    🛒 Магазин пуст<br>
-                    Все товары уже куплены
+                    🛒 Магазин пуст<br><br>
+                    Все товары уже куплены или будут добавлены позже
                 </div>
             `;
         }
@@ -409,14 +400,18 @@
             `;
         }
 
-        // Обработка данных от бота
-        tg.onEvent('viewportChanged', function() {
+        tg.onEvent('viewportChanged', () => {
             tg.expand();
         });
 
-        // Загружаем данные при загрузке страницы
-        loadShopData();
+        // Загружаем данные сразу при загрузке страницы
+        window.addEventListener('DOMContentLoaded', loadShopData);
+        // Также пробуем загрузить, если DOM уже загружен
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadShopData);
+        } else {
+            loadShopData();
+        }
     </script>
 </body>
 </html>
-
