@@ -239,6 +239,16 @@
 
         let shopItems = [];
         let userPoints = 0;
+        let botUsername = 'footballcardFC_bot';
+
+        // Получаем username бота из URL параметров
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            botUsername = urlParams.get('bot') || 'footballcardFC_bot';
+            console.log('Bot username:', botUsername);
+        } catch (e) {
+            console.error('Ошибка получения bot username:', e);
+        }
 
         function loadShopData() {
             try {
@@ -353,9 +363,9 @@
                         <div class="rarity-badge ${rarityClass}">${rarityText}</div>
                         ${details.length > 0 ? `<div class="item-details">${details.join(' • ')}</div>` : ''}
                         <div class="item-price">${item.price} footpoints</div>
-                        <button class="buy-button" ${!canBuy ? 'disabled' : ''} onclick="buyItem(${item.shop_item_id})">
+                        <a href="https://t.me/${botUsername || 'footballcardFC_bot'}?start=buy_${item.shop_item_id}" class="buy-button" style="text-decoration: none; display: block; pointer-events: ${!canBuy ? 'none' : 'auto'}; opacity: ${!canBuy ? '0.5' : '1'};">
                             ${canBuy ? 'Купить' : 'Недостаточно средств'}
-                        </button>
+                        </a>
                     </div>
                 `;
             });
