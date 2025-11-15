@@ -197,6 +197,13 @@
             margin: 20px;
         }
 
+        .item-rating {
+            font-size: 16px;
+            color: #ffb74d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
         @media (max-width: 480px) {
             .shop-grid {
                 grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -215,7 +222,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🛒 Магазин карточек</h1>
+        <h1>Магазин карточек</h1>
         <div class="points" id="points">Загрузка...</div>
     </div>
 
@@ -283,7 +290,7 @@
 
         function updatePoints() {
             const pointsEl = document.getElementById('points');
-            pointsEl.textContent = `💰 У вас: ${userPoints} footpoints`;
+            pointsEl.textContent = `У вас: ${userPoints} footpoints`;
         }
 
         function renderShop() {
@@ -342,12 +349,12 @@
                     <div class="shop-item">
                         ${imageHtml}
                         <div class="item-name">${item.player_name}</div>
-                        <div class="item-rating">⭐ ${item.rating}</div>
+                        <div class="item-rating">Рейтинг: ${item.rating}</div>
                         <div class="rarity-badge ${rarityClass}">${rarityText}</div>
                         ${details.length > 0 ? `<div class="item-details">${details.join(' • ')}</div>` : ''}
-                        <div class="item-price">${item.price} FP</div>
+                        <div class="item-price">${item.price} footpoints</div>
                         <button class="buy-button" ${!canBuy ? 'disabled' : ''} onclick="buyItem(${item.shop_item_id})">
-                            ${canBuy ? 'Купить' : 'Недостаточно'}
+                            ${canBuy ? 'Купить' : 'Недостаточно средств'}
                         </button>
                     </div>
                 `;
@@ -373,22 +380,34 @@
                 return;
             }
 
+            // Показываем индикатор загрузки
+            tg.MainButton.setText('Обработка...');
+            tg.MainButton.show();
+            tg.MainButton.disable();
+
             // Отправляем данные в бота
-            tg.sendData(JSON.stringify({
-                action: 'buy_shop_item',
-                shop_item_id: shopItemId
-            }));
-            
-            // Закрываем MiniApp после отправки данных
-            // Бот отправит ответ пользователю отдельным сообщением
-            tg.close();
+            try {
+                tg.sendData(JSON.stringify({
+                    action: 'buy_shop_item',
+                    shop_item_id: shopItemId
+                }));
+                
+                // Ждем немного перед закрытием, чтобы данные успели отправиться
+                setTimeout(() => {
+                    tg.close();
+                }, 300);
+            } catch (e) {
+                console.error('Ошибка отправки данных:', e);
+                tg.showAlert('Ошибка при отправке запроса. Попробуйте еще раз.');
+                tg.MainButton.hide();
+            }
         }
 
         function showEmpty() {
             const contentEl = document.getElementById('content');
             contentEl.innerHTML = `
                 <div class="empty">
-                    🛒 Магазин пуст<br><br>
+                    Магазин пуст<br><br>
                     Все товары уже куплены или будут добавлены позже
                 </div>
             `;
@@ -398,7 +417,7 @@
             const contentEl = document.getElementById('content');
             contentEl.innerHTML = `
                 <div class="error">
-                    ❌ ${message}
+                    ${message}
                 </div>
             `;
         }
